@@ -6,16 +6,17 @@ Vous devez installer le launcher Epic Games sur votre système. Vous pouvez le t
 
 **Configuration minimale requise pour Unreal Engine 4.24.3 :**
 
-- Système d'exploitation : Windows 7/8/10 64-bit
-- Processeur : Quad-core Intel or AMD, 2.5 GHz ou plus rapide
-- Mémoire vive (RAM) : 8 GB
-- Carte graphique (obligatoire) : DirectX 11 compatible (NVIDIA GeForce GTX 470 ou AMD Radeon HD 6870 ou équivalent)
-- Espace disque : 20 GB d'espace libre
+- Système d'exploitation : Windows 7/8/10 64-bit.
+- Processeur : Quad-core Intel or AMD, 2.5 GHz.
+- Mémoire vive (RAM) : 8 GB.
+- Carte graphique (obligatoire).
+- Espace disque : 35-40 GB d'espace libre voir +.
 
 ## Introduction
 
 Si vous n'avez pas réaliser la partie 1 du workshop je vous invite à aller jeter un oeil [ici](https://github.com/Wavitoo/Workshop-Unreal-1).
-Dans ce workshop nous allons nous initier à la programmation en Blueprint principalement et pour les plus rapide d'entre vous en Bonus du C++.
+Dans ce workshop nous allons nous initier à la programmation en Blueprint principalement et pour les plus rapide d'entre vous en Bonus vous pouvez commencer à créer votre projet.
+Pour rappel si vous avez des questions, que vous êtes bloqués, que vous ne comprenez pas quelque chose venez nous voir ou levez la main.
 
 ## Programmation en Blueprint
 
@@ -421,10 +422,112 @@ Nous allons utiliser maintenant un Blueprint Interface afin de réaliser un syst
 
 **Qu'est-ce qu'un Blueprint Interface ?**
 
+Une Interface Blueprint est un ensemble d'une ou plusieurs fonctions, uniquement le nom, sans implémentation qui peuvent être ajoutées à d'autres Blueprints.
+Tout Blueprint auquel l'Interface est ajoutée est garanti de posséder ces fonctions.
+Les fonctions de l'Interface peuvent recevoir une fonctionnalité dans chacun des Blueprints qui l'ont ajoutée. Cela correspond essentiellement au concept d'une interface en programmation générale, qui permet à différents types d'objets de partager et d'être accessibles via une interface commune.
+En résumé, les Interfaces Blueprint permettent à différents Blueprints de partager des données entre eux et de s'envoyer des données.
+
+Dans le dossier Blueprints créer un dossier Interface.
+Dans le dossier Interface vous allez ajouter un Blueprint Interface situé dans Blueprints > Blueprint Interface.
+Nommer votre fichier BPI_Interact.
+Ouvrer votre BPI et renommer la fonction Interact.
+Allez dans votre blueprint du personnage et appuyer sur Class Settings.
+
+![image](https://github.com/Wavitoo/Workshop-Unreal-2/assets/114447473/d29eea4e-126b-4829-a4b7-dd8cf1f4f76a)
+
+Ensuite, ajouter votre Interface via le bouton Add dans la catégorie Interfaces.
+
+![image](https://github.com/Wavitoo/Workshop-Unreal-2/assets/114447473/7be72119-f6d9-4fa5-85d0-368ea94cdf50)
+
+Vous verrez que vous aurez une nouvelle catégorie Interfaces dans le panel My Blueprint.
+
+![image](https://github.com/Wavitoo/Workshop-Unreal-2/assets/114447473/a21dfa51-4353-4aad-b3d4-964e87cd71c3)
+
+Vous allez maintenant implémenter le système d'interaction.
+Vous pouvez soit appeler la touche directement de l'envent graph comme par exemple la touche E.
+
+![image](https://github.com/Wavitoo/Workshop-Unreal-2/assets/114447473/40757f69-2320-4755-b1a8-6949de9daef8)
+
+Sinon vous pouvez faire un nouveau action mapping dans le Edit > Project Settings > Input > Action Mapping > +.
+Vous devrez donner un nom à votre Action mapping et lui assigner une touche.
+
+![image](https://github.com/Wavitoo/Workshop-Unreal-2/assets/114447473/8031af9d-8cd9-4bb9-a635-f0e421c882c0)
+
+Dans votre Event Graph du personnage appeler soit votre Action Mapping en mettant son nom ou juste la touche de clavier que vous souhaitez utiliser.
+On va utiliser un For each loop.
+On voit qu'en entrée il prend un array.
+On va lui assigner la fonction Get Overllaping Actors.
+On va ensuite tirer la Array element du for loop et chercher le node "Does Implement Interface".
+Dans l'entrée Interface on va renseigner notre Interface BPI_Interact.
+En sortie de ce node on va faire un if et si cela est vrai on va faire la fonction Interact (Message).
+Si vous ne la trouvez pas tirer le Array element du for loop et taper la fonction Interact (Message).
+
+**Que font les nodes qu'on a ajouté ?**
+
+**- For Each Loop :**
+Une boucle "For Each" en Blueprint (similaire à d'autres langages de programmation) itère sur chaque élément d'un tableau (array).
+Pour chaque élément, elle exécute un ensemble de nodes connectés.
+
+**- Does Implement Interface :**
+Le node "Does Implement Interface" vérifie si un objet spécifique implémente une certaine interface Blueprint. En d'autres termes, il détermine si l'objet a ajouté cette interface et, par conséquent, s'il contient les fonctions définies par l'interface. C'est utile pour assurer qu'un objet possède certaines fonctionnalités avant de tenter de les utiliser.
+
+**- Interact (Message) :**
+En Blueprint, les interfaces peuvent définir des fonctions ou des événements appelés "Messages". L'interaction (Message) d'une interface envoie un message ou appelle une fonction définie par l'interface sur un objet cible. Cela permet de déclencher des comportements spécifiques sur des objets qui implémentent cette interface, même si les objets sont de types différents. Le message "Interact" est souvent utilisé pour des actions communes comme l'interaction du joueur avec des objets dans le jeu.
+
+## Exercice 9
+
+Créer un actor et ajouter lui l'interface BPI_Interact.
+Ajouter une forme que vous voulez en component et on va lui créer un trigger (lorsque le joueur sera dans une zone proche à l'objet).
+Ajouter une sphere collision et augmenter son radius.
+Quand le joueur rentre dans la zone (OnActorBeginOverlap) vous allez mettre un print string "Ready to interact".
+Quand le joueur sort de la zone (OnActorEndOverlap) vous allez mettre un print string "Cannot interact anymore".
+
+### Interaction
+
+Nous allons créer un blueprint lorsque le joueur sera dans la zone afin de voir un message qui apprait sur l'écran pour dire qu'il peut interagir.
+Dans le dossier UI créer un widget blueprint.
+Nommer le UI_InteractPrompt.
+Changer la façon dont on verra votre widget par Desired au lieu de Full Screen.
+
+![image](https://github.com/Wavitoo/Workshop-Unreal-2/assets/114447473/7e336ca1-9f5b-469c-b81b-b55695c5f08f)
+
+Supprimer le canvas panel et ajouter une Vertical box.
+Dans cette vertical box ajouter un texte qui contiendra [votre touche] Intéragir.
+Vous pouvez augmenter la taille du texte, rajouter des outlines et d'autres si vous le souhaiter.
+
+Retournez dans votre actor que vous avez créer pour l'interface.
+Ajouter un component "Widget" à votre actor et assigner votre UI dans dans le Widget Class.
+
+![image](https://github.com/Wavitoo/Workshop-Unreal-2/assets/114447473/366e76e1-0397-458a-a276-f53e5d3c4a9d)
+
+Ensuite positionner bien votre texte jusqu'à ce que vous soyez satisfait et dès que vous avez terminé changé le Space, de World à Screen.
+Dernière chose à faire avec le widget enlever sa visibilité dans le detail panel.
+
+
+## Exercice 10
+
+Normalement vous avez ajouter les print string lorsque le joueur rentre dans la zone et sort de la zone.
+Vous pouvez supprimer les print string et get le Widget disponible dans vos variables.
+Si il entre dans la zone (OnActorBeginOverlap) un set visibility à true et si il sort False.
+
+## Exercice 11
+
+Faites un nouvel actor qui sera comme une porte de garage donc il s'ouvrira par le haut ou sur la gauche.
+Faites des custom event pour pouvoir rappeller vos fonctions après.
+
+**Indice :**
+Utiliser une timeline et regarder dans le Viewport général pour les axes.
+
+## Exercice 12
+
+Dans l'actor qui réçoit l'interface vous allez créer une variable qui aura comme type l'actor que vous avez créer en object reference.
+Faites un get et appelez votre fonction pour ouvrir la porte.
+Normalement lors de l'appuie de la touche que vous avez assigné la porte s'ouvrira.
+
 ## Bonus
 
 Vous pouvez commencer à développer votre jeu pour le prochain workshop.
-Vous avez le champ libre pour le type de jeu.
+Vous avez le champ libre pour le type de jeu et les mécaniques présentes.
 
 ## Contact
 Si vous avez des questions ou besoin d'informations, veuillez me contacter à arslan.tetu@epitech.eu
