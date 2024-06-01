@@ -15,90 +15,345 @@ Vous devez installer le launcher Epic Games sur votre système. Vous pouvez le t
 ## Introduction
 
 Si vous n'avez pas réaliser la partie 1 du workshop je vous invite à aller jeter un oeil [ici](https://github.com/Wavitoo/Workshop-Unreal-1).
-Dans ce workshop nous allons nous initier à la programmation en Blueprint principalement et pour les plus rapide d'entre vous en Bonus vous pouvez commencer à créer votre projet.
-Pour rappel si vous avez des questions, que vous êtes bloqués, que vous ne comprenez pas quelque chose venez nous voir ou levez la main.
+Dans ce workshop nous allons nous initier à la programmation en C++ principalement et pour les plus rapide d'entre vous en Bonus vous pourrez faire des exercices en Blueprint.
+Vous trouverez toute la doc donc vous aurez besoin [ici](https://docs.unrealengine.com/4.27/en-US/ProgrammingAndScripting/ProgrammingWithCPP/).
+Nous devez assigner un IDE pour pouvoir compiler votre C++.
+Aller dans Edit > Source Code > Votre IDE de votre choix.
+
+## Programmation en C++
+
+Créer un nouveau projet mais cette fois en C++ aller voir la partie 1 mentionné ci-dessus pour savoir comment créer un projet mais ça sera en C++ et en template blank.
+Il faut savoir sur Unreal engine sur notre projet C++ on va quand même utiliser le blueprint ça sera un mix des deux.
+
+## Exercice 1:
+
+Aller dans C++ Classes, clique droit dans le content browser > New C++ Class > Character.
+
+Pour aller dans C++ Classes appuyez sur le bouton qui se trouve juste à côté du Filter dans le Content Browser:
+
+![image](https://github.com/Wavitoo/Workshop-Unreal-2/assets/114447473/550eb640-b123-4df8-a089-16eb1a8c6088)
+
+Nommez votre character PlayerCharacter.
+Ensuite Create Class.
+
+![image](https://github.com/Wavitoo/Workshop-Unreal-2/assets/114447473/5d1e2711-9df2-496c-83a8-90057ae8bcc7)
+
+Vous verrez que directement après avoir créer votre character votre IDE sera ouvert avec le fichier .cpp et .h de votre character directement.
+Pour ne pas oublier vous allez faire clique droit sur votre class character et créer un Blueprint avec.
+Nommer le BP_PlayerCharacter.
+
+![image](https://github.com/Wavitoo/Workshop-Unreal-2/assets/114447473/bd32402d-651f-4c0e-ada8-083ac6cf4591)
+
+Ensuite vérfier que votre code compile bien.
+Allez sur Unreal et vous verrez un bouton compile juste au dessus de votre viewport.
+
+![image](https://github.com/Wavitoo/Workshop-Unreal-2/assets/114447473/d1c5c1ca-9424-450c-82d7-3d514dc96f71)
+
+Vous verrez en bas à droite qu'il est en train de compiler votre code.
+Si tout est bon ça sera marqué que la compilation est terminé.
+A chaque changement de code ou création de fichier cpp vous devrez compiler pour assurer le bon fonctionnement.
+Vous pouvez éviter de compiler à chaque fois en faisant Ctrl + Shift + B.
+
+Dans le header vous allez créer une nouvelle catégorie protected.
+Vous allez déclarer une variable qui est une class de UCameraComponent* Camera.
+
+Dans le cpp, dans le constructeur vous allez créer la caméra dans votre personnage.
+Pour pouvoir créer et attacher notre caméra on aura besoin du .h de la caméra qui est Camera/CameraComponent.h.
+Vous allez utiliser la fonction CreateDefaultSubobject qui prendra UCameraComponent et en arguement on mettra le nom de la camera avec TEXT("").
+
+![image](https://github.com/Wavitoo/Workshop-Unreal-2/assets/114447473/39ddffce-00d1-477f-80f4-2e382bd59de1)
+
+Evidemment le return pour cette fonction doit aller dans la variable Camera qu'on a créer dans le header.
+Dès qu'on a créer cette caméra il faudra l'attacher à notre personnage donc il faut utiliser la fonction SetupAttachment(RootComponent).
+Cette fonction fait partie de notre variable Camera.
+Si on compile notre code on verra que dans le Blueprint de notre personnage qu'on a crée avant, on verra la caméra mais on ne pourra pas modifie sa position, sa rotation et autre.
+Juste au dessus de votre déclaration de variable dans le .h vous allez utiliser la fonction UPROPERTY(EditAnywhere) qui vous permettra de la modifier.
+
+Normalement si vous allez dans le Blueprint de votre personnage vous pourrez modifier la position de votre caméra.
+Positionner la position de votre caméra au niveau de la tête environ a Z = 50.
+
+Pour pouvoir bouger la caméra en jeu vous allez devrez activer l'option Use Pawn Control Rotation.
+
+Dans votre code, toujours dans le constructeur vous allez activer la valeur bUsePawnControlRotation à true.
+Elle fait partie de la class Camera.
+
+Créer un fichier dans votre dossier Content.
+Clique droit > Blueprint class > GameMode Base.
+Appellez le BP_GameMode.
+Ouvrez le fichier et dans Default Pawn Class mettez votre BP_PlayerCharacter.
+
+Ensuite vous devez assigner votre gamemode :
+
+![image](https://github.com/Wavitoo/Workshop-Unreal-2/assets/114447473/7494e70e-51ef-47bd-9261-8ea975e9d075)
+
+## Exercice 2:
+
+Allez dans Edit > Project Settings > Input.
+Vous allez créer un Action Mappings.
+
+Nommez-le Jump avec la touche espace.
+
+Ensuite deux Axis Mappings.
+Un qui s'appelle MoveForward avec les touches Z et S.
+Le scale de Z reste à 1 mais S sera à -1.
+Voyez ça comme un axe, pour bouger vers le haut donc positivement c'est Z et pour bouger vers le bas donc négativement c'est S.
+Le deuxième Axis Mappings sera MoveRight avec les touches Q et D.
+Donc pour Q, son scale sera de -1 et D à 1.
+
+Créer deux prototype dans le header qui se nommeront MoveForward et MoveRight qui prendront un float nommé InputValue.
+Déclarer ces fonctions dans le cpp.
+
+Dans la fonction SetupPlayerInputComponent.
+Vous allez prendre la variable PlayerInputComponent pointer vers la fonction BindAction() qui prendra en argument le nom de l'action mappings donc "Jump", ensuite l'enum input donc quand on appuira sur la touche "IE_Pressed", this et la référence de la fonction Jump &ACharacter::Jump.
+
+Vu que la c'était un action mappings on a utilisé BindAction() mais la on va utiliser BindAxis().
+On va faire la même chose qu'on a fait pour Jump mais on enlève l'enum et au lieu que ça soit une référence de &ACharacter ça sera notre personnage directement donc &APlayerCharacter.
+
+Pour les fonctions MoveForward() et MoveRight():
+
+**- MoveForward():**
+
+Vous allez créer une variable de type FVector avec le nom que vous souhaitez qui sera égal à la fonction GetForwardVector().
+Et après la déclaration de cette variable on appelle la fonction AddMovementInput qui prendra en argument la variable qu'on vient de créer et l'argument de notre fonction.
+
+**- MoveRight():**
+
+La même que la fonction MoveForward() sauf pour la variable on utilisera la fonction GetActorRightVector().
+
+Maintenant vous pouvez vous déplacer avec votre personnage.
+
+## Exercice 3:
+
+Vous allez créer deux nouveaux axis mappings Turn et LookUp.
+Dans Turn ça sera Mouse X avec 1 de scale et dans LookUp Mouse Y avec une valeur de -1.
+Si avec mouse X vous mettez -1 ça sera en inversé et pour mouse Y ça sera en inversé aussi.
+
+Dès que vous avez créer les axis mappings créer les prototypes des fonctions dans le header.
+Avec le nom de votre action mappings et les mêmes arguments que les fonctions qu'on a déjà faites.
+
+Dans la fonction SetupPlayerInputComponent() on fait la même chose que pour les fonctions MoveForward() et MoveRight() sauf qu'on modifie le nom de l'axis mappings.
+Pour la fonction Turn on va utiliser la fonction AddControllerYawInput() qui prend en argument la variable en argument de notre fonction.
+Pour la fonction LookUp on va utiliser la fonction AddControllerPitchInput() qui prend en arguement la variable en arguement de notre fonction.
+
+Vous pouvez compiler et normal vous pouvez bouger votre caméra.
+Si votre caméra ne bouge pas vérifiez bien que vous avez bien activé le Use Pawn Control Rotation dans votre caméra dans le Blueprint du personnage.
+
+## Exercice 4:
+
+Vous allez important un Skeletal mesh pour avoir un personnage.
+Vous pouvez import celui qui est dans le repo.
+Spoiler: il est immonde aucune texture dessus.
+Pour l'import il y a le bouton dans le content browser:
+
+![image](https://github.com/Wavitoo/Workshop-Unreal-2/assets/114447473/5492e1e8-021d-4603-9a07-ec675ab4325d)
+
+Si vous voulez utiliser des vrais skeletal mesh vous pouvez retrouvez des sk mesh du market place gratuit ici[https://www.unrealengine.com/marketplace/en-US/product/adventure-character] et ici [https://www.unrealengine.com/marketplace/en-US/product/stylized-male-character-kit-casual].
+
+## Exercice 5:
+
+Dans la catégorie public de votre hpp déclarer le prototype de votre fonction void SpawnActor().
+Juste au dessus de votre prototype vous aller utiliser UFUNCTION() qui prendra en argument BlueprintCallable et Category = "Abilities".
+Ce qui va nous servir à distinguer notre fonction en Blueprint car il existe déjà des fonctions SpawnActor.
+
+Ensuite vous allez créer une variable TSubofClass où la classe sera AACtor avec le nom de l'actor qui va spawn.
+
+![image](https://github.com/Wavitoo/Workshop-Unreal-2/assets/114447473/f242b920-25c3-4837-aa9d-200d76a86d05)
+
+Au dessus de cette déclaration de variable vous allez mettre UPROPERTY() avec en argument EditAnywhere pour pouvoir référencer l'actor à spawn directement dans votre personnage.
+
+Dernièrement une variable de type FTransform qui sera aussi en EditAnywhere pour pouvoir modifier la position où l'objet spawnera.
+
+Dans votre header vous allez include : "Runtime/Engine/Classes/Engine/World.h".
+Il faut savoir que les include doivent être avant le .generated sinon vous aurez des erreurs de compilations.
+
+Dans votre fonction vous allez utiliser une variable de type FActorSpawnParameters.
+Vous allez ensuite modifier la valeur de ce type avec SpawnCollisionHandlingOverride qui sera égal à l'enum ESpawnActorCollisionHandlingMethod qui appelera l'enum class avec ::, la class AdjustIfPossibleButAlwaysSpawn.
+Ensuite on va récupérer notre monde avec GetWorld() qui va appeler la fonction SpawnActor avec la class Actor avec les signes inférieur et supérieur qui prendra en arguement l'actor a spawn, notre variable FTransform et la variable qu'on a déclaré dans la fonction.
+
+Oubliez pas de compiler Shift + Ctrl + B ou compile directement sur unreal.
+Si vous allez dans votre personnage et dans Class Default vous verrez qu'il y aura l'actor à spawn et la position.
+
+![image](https://github.com/Wavitoo/Workshop-Unreal-2/assets/114447473/26ff1f49-15b1-4fc5-96c1-dbb1b0c9b018)
+
+Dans votre Event graph de votre personnage vous allez appeler l'event Left Mouse Button.
+Vous allez tirer le node Pressed et appeler votre fonction SpawnActor, vérifiez qu'elle est bien dans la catégorie Abilities.
+
+![image](https://github.com/Wavitoo/Workshop-Unreal-2/assets/114447473/1b0b14ec-658e-47c6-b139-fda25e71f7d5)
+
+Maintenant, créer un nouveau Blueprint Class de type actor et ajouter un Cube dedans avec le Add Component et activer l'option Simulate Physics avec votre cube sinon il sera sans gravité.
+Assigner votre acteur dans votre personnage avec le nom que vous lui avez donné à votre Actor où il y a cube et choisissez la position où vous voulez qu'il spawn.
+Ensuite lancez votre jeu et essayer votre code en appuyant sur clique gauche.
+
+## Exercice 6:
+
+Vous allez include "Blueprint/UserWidget.h" dans le .h.
+Dans la catégorie public, vous allez créer trois variables une pour votre vie et deux pour votre widget.
+Une variable float pour la vie de votre personnage au dessus il y aura le UPROPERTY() avec les arguments EditAnywhere et BlueprintReadWrite.
+Un TSubclassOf de UUserWidget qui sera la class de votre widget.
+Et un pointeur de UUserWidget qui sera votre widget.
+Au dessus de notre variable qui contiendra la class de notre widget le UPROPERTY() avec en argument EditAnywhere et Category = "UI".
+On va déclarer le prototype de notre fonction :
+
+![image](https://github.com/Wavitoo/Workshop-Unreal-2/assets/114447473/0e027389-efaf-4056-856b-876e35495be4)
+
+Dans votre cpp vous allez include : "Components/CapsuleComponent.h" afin de pouvoir utiliser la CapsuleComponent de votre personnage pour jouer avec les collisions.
+Dans votre constructeur vous allez initialiser votre vie du personnage à 100 et attention c'est un float donc on oublie pas le .0f.
+Dans la fonction BeginPlay on va récupérer notre CapsuleComponent avec la fonction GetCapsuleComponent() qui pointe sur la structure OnComponentBeginOverlap() et pas notre fonction.
+La structure va appeler la fonction AddDynamic() qui aura en argument this et notre fonction OnBeginOverLap en référence.
+
+Ensuite on va check si notre widget class est différent de nullptr.
+Si c'est différent donc on va utiliser notre variable widget et pas la class qui sera égale à la fonction CreateWidget() qui prendra en arguement GetWorld() et notre class de widget.
+Après il faudra afficher notre widget avec la fonction AddToViewport().
+
+Dans votre gestionnaires de fichiers vous allez devoir trouver un fichier nommé : NomDeVotreProjet.Build.cs.
+Dans le PublicDependencyModuleNames vous allez ajouter "UMG" afin de pouvoir utiliser les widgets.
+
+Dès que c'est fait on va faire notre fonction OnBeginOverLap().
+On va check si OtherActor continet le tag avec la fonction ActorHasTag("et vous mettez le tag que vous voulez").
+Si c'est vrai on va enlever x points de vie à notre personnage.
+
+Vous allez créer un dossier Widget dans Content et créer un UserInterface.
+Clique droit > User Interface > Widget Blueprint.
+Vous allez ajouter une progress bar dans votre UI configurez la comme vous le souhaiter.
+Cherchez percent pour voir progress bar.
+Vous allez voir un bouton Bind, cliquez dessus.
+Ca sera pour récupérer la valeur et la set pour la progress bar.
+Vous allez faire un cast to BP_PlayerCharacter.
+Dans le object vous faites un get player character.
+
+![image](https://github.com/Wavitoo/Workshop-Unreal-2/assets/114447473/7dbc1646-fd1f-40ea-9ed1-c1c33a2cad49)
+
+Dans le As BP_PlayerCharacter vous allez chercher votre variable que vous avez créer dans votre C++ pour la vie de votre personnage.
+Cette valeur vous allez faire un float / float.
+Vous divisez cette valeur par 100 car la progress bar va de 0 à 1.
+Vous mettez le résultat de cette opération dans le return value.
+
+Vous allez créer un actor, ajouter un cube dedans et dans la catégorie collision, collision presset vous mettez OverlapAll.
+
+![image](https://github.com/Wavitoo/Workshop-Unreal-2/assets/114447473/7d6de20c-5b36-4605-83ad-f0a29309fc96)
+
+Comme ça votre personnage pourra passer à travers.
+Dernière chose vous allez dans Class Default et cherchez tag et renseignez le tag que vous avez mis dans votre code C++.
+
+![image](https://github.com/Wavitoo/Workshop-Unreal-2/assets/114447473/712935cb-30bb-4f4f-8b3a-6b0598ad7d60)
+
+Glissez votre actor dans votre level vous devrez normalement perdre de la vie.
+
+## Exercice 7:
+
+Faites la même chose mais pour vous ajoutez de la vie.
+
+## Exercice 8:
+
+Dans cet exercice, vous allez créer une plateforme mobile.
+
+Dans le Content browser aller dans C++ Classes > Nom de votre Projet > Clique Droit > New C++ Class > Actor.
+
+![image](https://github.com/Wavitoo/Workshop-Unreal-2/assets/114447473/38cfb822-86a2-49a8-9eb6-03ee548d7eee)
+
+Nommer votre fichier MovingPlatform.
+Nous allons faire directement pour que la plateforme sur tous les axes ainsi qu'elle puisse tourner.
+Dès que votre fichier est créé vous voyez qu'il y a un header et un cpp.
+
+Dans le header vous allez créer un section private et vous allez utiliser la fonction UPROPERTY().
+Dans le UPROPERTY vous allez mettre en argument EditAnywhere et Category="Moving".
+
+![image](https://github.com/Wavitoo/Workshop-Unreal-2/assets/114447473/e8c8860e-2721-4797-8b96-9c062964672b)
+
+Cela va vous servir de faire une catégorie pour chaque déplacement sur chaque axe.
+Vous allez ensuite appeler la structure FVector (comme type de variable) qui sera assigné à la vitesse de la plateforme.
+Cette variable Fvector avec le nom que vous avez choisie sera égale aussi à un FVector en arguement (100,0,0).
+Ensuite vous recréer le même UPROPERTY que vous avez fait au dessus.
+Vous allez déclarer une variable pour la distance sur laquelle votre plateforme va bouger assigner lui une valeur.
+Ensuite pour la dernière variable qui sera encore de type FVector pour la location d'où votre plateforme partira.
+
+Vous allez créer le prototype de votre fonction MovePlatform qui prend en argument un float et le nom de la variable DeltaTime.
+Ensuite vous allez créer deux autres prototypes de fonction une qui sera de type bool pour savoir si la plateforme doit revenir qui sera const et l'autre de type float pour récupérer la distance parcours qui sera aussi const.
+
+Vous allez coder maintenant les fonctions récupérer la distance parcourue et si la plateforme doit retourner et la distance parcourue.
+Il faut faire attention à la classe donc notre fonction dans le cpp sera de type :
+
+void (Class)::NomDeFonction(type_var nom_var, ...)
+
+Logiquement pour la fonction de la distance parcoure est :
+
+float AMovingPlatform::NomDeVotreFonction() const.
+
+Dans cette fonction vour allez utiliser une fonction qui est dans la structure FVector qui se nomme Dist().
+Elle prendra deux argument la position de base et la position de l'acteur.
+Sachant qu'elle est de type float ça veut dire qu'on doit return une valeur pour ensuite utiliser le résultat de cette fonction.
+
+Pour la fonction pour que la plateforme revienne en arrière est :
+
+bool AMovingPlatform::NomDeVotreFonction() const.
+
+Vous allez utiliser la fonction GetDistanceMoved et la variable que vous avez créer dans le hpp pour la distance parcourue.
+Son type est bool donc on veut aussi le résultat de cette fonction.
+
+Dans la fonction BeginPlay assigner la position de start qui sera égal à la fonction GetActorLocation().
+
+Maintenant pour la fonction pour bouger la plateforme qui est structuré comme ceci :
+
+void AMovingPlatform::NomDeVotreFonction(float DeltaTime).
+
+Dans cette fonction on doit faire une condition que si elle a déjà parcourue sa distance.
+Elle va revenir en arrière donc :
+Créer une variable de type FVector qui sera égale à votre variable vitesse de la plateforme.GetSafeNormal().
+Ensuite on modifie la variable de la position de Start donc elle sera additionné à la variable qu'on vient de créer de FVector * sa distance parcourue.
+Après on doit assigné sa nouvelle position avec la fonction SetActorLocation().
+Ensuite vu que notre variable de vitesse est positive elle doit être maintenant négative afin d'aller dans la direction inverse.
+
+Sinon, on recréer une variable de type FVector qui sera égale à la fonction GetActorLocation().
+Cette variable sera additionné par (la vitesse de notre plateforme * le delta time).
+Les parenthèses sont importants dans la phrase du dessus.
+Enfin on assigne notre position avec SetActorLocation().
+
+Maintenant il faut appeler notre fonction sinon elle ne fera rien.
+Dans la fonction Tick on appelera notre fonction qui sert à bouger la plateforme avec l'argument.
+
+Glisser déposer votre actor MovingPlatform dans le level et ajouter lui un cube avec Add Component.
+
+![image](https://github.com/Wavitoo/Workshop-Unreal-2/assets/114447473/403fcf45-8d11-44bd-ab83-0114f0cafb5c)
+
+Normalement vous verrez vos variables que vous avez assigné directement depuis le viewport.
+Si vous avez bien réaliser votre code, votre plateforme doit bouger de gauche à droite et la vitesse dépend de ce que vous assigner en valeur.
+
+## Exercice 9:
+
+Implémenter la rotation dans votre actor MovingPlatform.
+Dans votre header au lieu que ça soit un FVector ça sera un FRotator et la fonction sera du même prototype que la fonction pour bouger la plateforme.
+Oublier pas d'ajouter le UPROPERTY mais cette fois avec une catégorie différente avec Rotation.
+Dans la fonction pour tourner votre plateforme au lieu d'utiliser GetActorLocation() et SetActorLocation() vous allez utiliser directement pour la rotation.
+
+## Exercice 10:
+
+Modifier les axes vector de votre actor afin que cela marche comme un ascenseur de haut en bas.
+
+## Exercice 11:
+
+Modifier les axes rotator de votre actor afin qu'il puisse tourner.
+Si il y a des bugs de collision allez dans votre blueprint de votre personnage.
+Ouvrez l'event graph appeller l'event tick.
+Appeller deux fois la fonction MoveUpdateComponent et pour ces deux nodes en target ça sera le character movement et pour la rotation vous faites un get actor rotation.
+
+## Exercice 12:
+
+Maintenant que vous avez fait un actor pour bouger la plateforme en continue faites pour que ça soit directement.
+Faites une "porte" un grand cube qui s'ouvrira en de gauche à droite comme un décalage.
+
+## Exercice 13:
+
+Faites la même chose mais pour une porte de garage de haut en bas.
+
+## Bonus
 
 ## Programmation en Blueprint
 
-Si vous n'avez pas créer de projet je vous invite à aller voir le workshop mentionné ci-dessus afin de voir comment créer un projet.
-Si vous avez déjà un projet en template Third Person vous pouvez le lancer.
-
-Pour que ça soit plus à l'aise pour vous afin de tester les différents système que l'on va aborder.
-Vous pouvez changer les input du personnage car pour le moment elles sont en W, A, S, D.
-Allez dans Edit tout en haut à gauche de votre Unreal > Project Settings > Input dans la catégorie Engine > Axis Mappings.
-Changer le MoveForward et le MoveRight.
-Soit vous ajouter directement la touche ou vous changer celle existante.
-Attention, si vous ajouter une touche spécialement pour le MoveRight si vous mettez la touche Q vérifiez bien que le scale soit négatif avec la valeur -1.0
-
-Nous allons voir comment est faite l'interface et la programmation de notre personnage.
-Dans le Content browser aller dans le dossier ThirdPersonBP > Blueprint > ThirdPersonCharacter.
 Ouvrez votre fichier qui contient votre personnage.
-
-Vous trouverez l'interface global de tous les actors du jeu similaire à celle-ci:
-
-![interface_actor](https://github.com/Wavitoo/Workshop-Unreal-1/assets/114447473/a3c69be1-9b34-4c53-95fa-651c17ec30fa)
-
-Vous aurez 3 différentes window :
-
-**- Viewport:**
-
-Le viewport d'un Blueprint d'acteur est une fenêtre de l'éditeur où vous pouvez voir et interagir avec les composants qui composent l'acteur.
-
-**- Construction Script:**
-
-Le script de construction s'exécute après la liste des composants lorsqu'une instance d'une classe Blueprint est créée. Il contient un graphe de nodes qui est exécuté, permettant à l'instance de la classe Blueprint de réaliser des opérations d'initialisation.
-
-**- Event Graph:**
-
-L'Event Graph dans un Blueprint d'acteur est où vous définissez la logique de jeu qui s'exécute en temps réel pendant le jeu. C'est là que vous réagissez aux événements, contrôlez les animations, gèrez les interactions des joueurs, et bien plus encore. Voici quelques points clés sur l'Event Graph :
-
-### Viewport
-
-Lorsque vous cliqué sur la window Viewport vous pouvez voir voir personnage avec différents components :
-
-![viewport](https://github.com/Wavitoo/Workshop-Unreal-1/assets/114447473/4e90c9d1-eb22-45d3-8248-beddf7c5c676)
-
-Afin de voir précisément les components présents sur votre personnage, vous avez une window component situé en haut à gauche de l'interface :
-
-![component](https://github.com/Wavitoo/Workshop-Unreal-1/assets/114447473/214b9dd9-872d-404d-92c7-59b0dc51ae13)
-
-Comme vous pouvez le voir vous avez comme component :
-
-**- Capsule Component:**
-
-Le Capsule Component est utilisé comme la collision principale pour le personnage.
-Il détermine la forme et la taille de la zone de collision autour du personnage, qui est généralement une capsule verticale.
-Il sert principalement à détecter les collisions avec d'autres objets et déterminer les interactions physiques.
-
-**- Arrow Component:**
-
-Le Arrow Component est un composant de direction visuel qui indique l'orientation de l'acteur dans le monde.
-Il sert de guide visuel pour l'orientation et le placement du personnage dans l'éditeur.
-
-**- Mesh:**
-
-Le Mesh Component est le composant qui contient le maillage squelettique ou statique du personnage, c'est-à-dire le modèle 3D visible.
-Il représente visuellement le personnage dans le level.
-
-**- Camera Boom:**
-Le Camera Boom (également appelé Spring Arm Component) est un bras extensible qui maintient la caméra à une certaine distance du personnage.
-Cela créer une distance ajustable entre la caméra et le personnage, tout en lissant les mouvements de la caméra.
-
-**- Follow Camera:**
-
-La Follow Camera est la caméra qui suit le personnage, attachée au Camera Boom.
-Elle fournit la vue principale du jeu depuis laquelle le joueur voit et contrôle le personnage.
-
-**- Character Movement:**
-
-Le Character Movement Component est responsable de gérer la physique et les déplacements du personnage.
-Il contrôle les mouvements du personnage, y compris la marche, la course, le saut, les interactions avec la gravité et les surfaces et d'autre.
 
 ### Event graph
 
 Vous pouvez voir dans l'event graph vous avez déjà du code existant.
-Le code existant est lié au mouvement du personnage avec le clavier, la VR et la manette.
-
 Si vous faites un clique droit de l'event graph vous verrez une liste déroulante qui apparaîtra:
 
 ![image](https://github.com/Wavitoo/Workshop-Unreal-2/assets/114447473/a851c04f-cbfc-4588-ba92-b40076a13cab)
@@ -523,11 +778,6 @@ Utiliser une timeline et regarder dans le Viewport général pour les axes.
 Dans l'actor qui réçoit l'interface vous allez créer une variable qui aura comme type l'actor que vous avez créer en object reference.
 Faites un get et appelez votre fonction pour ouvrir la porte.
 Normalement lors de l'appuie de la touche que vous avez assigné la porte s'ouvrira.
-
-## Bonus
-
-Vous pouvez commencer à développer votre jeu pour le prochain workshop.
-Vous avez le champ libre pour le type de jeu et les mécaniques présentes.
 
 ## Contact
 Si vous avez des questions ou besoin d'informations, veuillez me contacter à arslan.tetu@epitech.eu
