@@ -11,6 +11,7 @@ Vous devez installer le launcher Epic Games sur votre système. Vous pouvez le t
 - Mémoire vive (RAM) : 8 GB.
 - Carte graphique (obligatoire).
 - Espace disque : 35-40 GB d'espace libre voir +.
+- IDE : Visual Studio 2017 ou + (Conseillé) sinon VS code.
 
 ## Introduction
 
